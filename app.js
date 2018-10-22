@@ -76,7 +76,7 @@ app.get('/twitter', (req, res) => {
     options.headers.Authorization = headers;
     options.headers.Accept = '*/*';
     console.log(options);
-    https.request(options, (responseFromApi) => {
+    http.request(options, (responseFromApi) => {
         let status = responseFromApi.statusCode;
         let respHeaders = responseFromApi.headers;
         let completeResponse = '';
