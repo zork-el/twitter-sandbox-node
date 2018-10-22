@@ -78,6 +78,7 @@ app.get('/twitter', (req, res) => {
     console.log(options);
     https.request(options, (responseFromApi) => {
         let status = responseFromApi.statusCode;
+        let respHeaders = responseFromApi.headers;
         let completeResponse = '';
         responseFromApi.on('data', (chunk) => {
             completeResponse += chunk;
@@ -86,7 +87,7 @@ app.get('/twitter', (req, res) => {
         responseFromApi.on('end', () => {
             const listData = JSON.parse(completeResponse);
             console.log(completeResponse);
-            res.status(200).json({ data: listData, status: status});
+            res.status(200).json({ data: listData, status: status, headers: respHeaders});
         }, (error) => {
             console.log(error);
         });
