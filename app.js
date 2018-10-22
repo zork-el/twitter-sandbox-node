@@ -55,7 +55,8 @@ app.get('/', (req, res) => {
 
 app.get('/twitter', (req, res) => {
     const reqUrl = encodeURI(`https://api.twitter.com/oauth/request_token`);
-    options.path = reqUrl;
+    options.host = 'stormy-lowlands-87826.herokuapp.com'
+    options.path = '/twitter';
     options.headers.Host = 'api.twitter.com';
     options.method = 'POST';
     const Params = params(options.method, options.path);
