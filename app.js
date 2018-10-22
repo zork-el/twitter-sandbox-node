@@ -31,7 +31,9 @@ app.get('/', (req, res) => {
         name: 'doctor who'
     };
     const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${reqObj.name}&apikey=${API_KEY}`);
-    options.path = reqUrl;
+    options.protocol = 'http'
+    options.host = 'www.omdbapi.com'
+    options.path = `/?t=${reqObj.name}&apikey=${API_KEY}`;
     http.request(options, (responseFromApi) => {
         console.log(responseFromApi.statusCode);
         let completeResponse = '';
