@@ -50,15 +50,15 @@ app.get('/', (req, res) => {
                 imgUrl: listData.Poster
             });
         }, (error) => {
-            console.log(error);
+            res.status(400).json(error);
         });
     }).end();
 });
 
 app.get('/twitter', (req, res) => {
     const reqUrl = encodeURI(`https://api.twitter.com/oauth/request_token`);
-    options.host = 'stormy-lowlands-87826.herokuapp.com'
-    options.path = '/twitter';
+    options.host = 'api.twitter.com'
+    options.path = '/oauth/request_token';
     options.headers.Host = 'api.twitter.com';
     options.method = 'POST';
     const Params = params(options.method, options.path);
