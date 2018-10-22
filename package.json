@@ -2,7 +2,7 @@
   "name": "twitter-sandbox",
   "version": "1.0.0",
   "description": "Playing with the twitter API.",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "twitter",
     "start": "nodemon server"
@@ -15,6 +15,7 @@
   "author": "zork_el",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "express-handlebars": "^3.0.0"
   },
