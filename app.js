@@ -31,9 +31,9 @@ app.get('/', (req, res) => {
         name: 'doctor who'
     };
     const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${reqObj.name}&apikey=${API_KEY}`);
-    options.protocol = 'http'
+    options.protocol = 'http:'
     options.host = 'www.omdbapi.com'
-    options.path = `/?t=${reqObj.name}&apikey=${API_KEY}`;
+    options.path = encodeURI(`/?t=${reqObj.name}&apikey=${API_KEY}`);
     http.request(options, (responseFromApi) => {
         console.log(responseFromApi.statusCode);
         let completeResponse = '';
@@ -57,11 +57,14 @@ app.get('/', (req, res) => {
 
 app.get('/twitter', (req, res) => {
     const reqUrl = encodeURI(`https://api.twitter.com/oauth/request_token`);
+    options.protocol = 'https:'
     options.host = 'api.twitter.com'
     options.path = '/oauth/request_token';
     options.headers.Host = 'api.twitter.com';
     options.method = 'POST';
-    const Params = params(options.method, options.path);
+    let url = options.protocol + '//' + options.host + options.path;
+    url = encodeURIComponent(url);
+    const Params = params(options.method, url);
     Params.oauth_callback = 'https://stormy-lowlands-87826.herokuapp.com/twitter/callback';
     var headers = Object.keys(Params)
                     .map((key) => {
