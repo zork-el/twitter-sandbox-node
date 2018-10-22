@@ -57,7 +57,6 @@ var options = {
 
 app.get('/twitter', (req, res) => {
     const reqUrl = encodeURI(`https://api.twitter.com/oauth/request_token`);
-    options.protocol = 'http:'
     options.host = 'api.twitter.com'
     options.path = '/oauth/request_token';
     options.headers.Host = 'api.twitter.com';
