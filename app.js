@@ -26,7 +26,7 @@ var options = {
     }
 };
 
-app.get('/', (req, res) => {
+/* app.get('/', (req, res) => {
     const reqObj = {
         name: 'doctor who'
     };
@@ -53,7 +53,7 @@ app.get('/', (req, res) => {
             res.status(400).json(error);
         });
     }).end();
-});
+}); */
 
 app.get('/twitter', (req, res) => {
     const reqUrl = encodeURI(`https://api.twitter.com/oauth/request_token`);
