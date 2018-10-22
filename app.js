@@ -1,10 +1,12 @@
 const express = require('express');
 const path = require('path');
 const http = require('http');
+const https = require('https');
 const bodyParser = require('body-parser');
 const hbs = require('express-handlebars');
 const API_KEY = '65a51c4b';
 const OMDB_ID = 'tt3896198';
+const params = require('./params');
 
 const app = express();
 
@@ -17,8 +19,7 @@ app.use(express.static(path.join(__dirname, '/public')));
 app.set('view engine', 'hbs');
 
 var options = {
-    host: '172.16.2.30',
-    port: 8080,
+    method: 'GET',
     path: '',
     headers: {
         Host: 'www.omdbapi.com'
@@ -27,11 +28,12 @@ var options = {
 
 app.get('/', (req, res) => {
     const reqObj = {
-        name: 'The Godfather'
+        name: 'doctor who'
     };
     const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${reqObj.name}&apikey=${API_KEY}`);
     options.path = reqUrl;
-    http.get(reqUrl, (responseFromApi) => {
+    http.request(options, (responseFromApi) => {
+        console.log(responseFromApi.statusCode);
         let completeResponse = '';
         responseFromApi.on('data', (chunk) => {
             completeResponse += chunk;
@@ -39,7 +41,6 @@ app.get('/', (req, res) => {
 
         responseFromApi.on('end', () => {
             const listData = JSON.parse(completeResponse);
-            console.log(completeResponse);
             res.render('home', {
                 title: listData.Title,
                 year: listData.Released,
@@ -49,8 +50,39 @@ app.get('/', (req, res) => {
         }, (error) => {
             console.log(error);
         });
-    });
+    }).end();
+});
 
+app.get('/twitter', (req, res) => {
+    const reqUrl = encodeURI(`https://api.twitter.com/oauth/request_token`);
+    options.path = reqUrl;
+    options.headers.Host = 'api.twitter.com';
+    options.method = 'POST';
+    const Params = params(options.method, options.path);
+    Params.oauth_callback = 'https://stormy-lowlands-87826.herokuapp.com/twitter/callback';
+    var headers = Object.keys(Params)
+                    .map((key) => {
+                        let encVal = encodeURIComponent(Params[key]);
+                        return `${key}="${encVal}"`;
+                    })
+                    .join(', ');
+    headers = 'OAuth ' + headers;
+    options.headers.Authorization = headers;
+    options.headers.Accept = '*/*';
+    https.request(options, (responseFromApi) => {
+        let completeResponse = '';
+        responseFromApi.on('data', (chunk) => {
+            completeResponse += chunk;
+        });
+
+        responseFromApi.on('end', () => {
+            const listData = JSON.parse(completeResponse);
+            console.log(completeResponse);
+            res.status(200).json(listData);
+        }, (error) => {
+            console.log(error);
+        });
+    }).end();
 });
 
 module.exports = app;
