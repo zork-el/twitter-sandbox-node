@@ -2,10 +2,10 @@
   "name": "twitter-sandbox",
   "version": "1.0.0",
   "description": "Playing with the twitter API.",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "test": "twitter",
-    "start": "node app.js"
+    "start": "nodemon server"
   },
   "keywords": [
     "twitter",
@@ -17,5 +17,8 @@
   "dependencies": {
     "express": "^4.16.4",
     "express-handlebars": "^3.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.18.4"
   }
 }
