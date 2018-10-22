@@ -1,0 +1,21 @@
+{
+  "name": "twitter-sandbox",
+  "version": "1.0.0",
+  "description": "Playing with the twitter API.",
+  "main": "app.js",
+  "scripts": {
+    "test": "twitter",
+    "start": "node app.js"
+  },
+  "keywords": [
+    "twitter",
+    "API",
+    "NodeJs"
+  ],
+  "author": "zork_el",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.4",
+    "express-handlebars": "^3.0.0"
+  }
+}
