@@ -31,7 +31,7 @@ app.get('/', (req, res) => {
     };
     const reqUrl = encodeURI(`http://www.omdbapi.com/?t=${reqObj.name}&apikey=${API_KEY}`);
     options.path = reqUrl;
-    http.get(options, (responseFromApi) => {
+    http.get(reqUrl, (responseFromApi) => {
         let completeResponse = '';
         responseFromApi.on('data', (chunk) => {
             completeResponse += chunk;
