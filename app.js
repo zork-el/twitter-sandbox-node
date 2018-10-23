@@ -79,7 +79,7 @@ app.get('/followers', (req, res) => {
     } else res.redirect('/');
 });
 
-app.get('logout', (req, res) => {
+app.get('/logout', (req, res) => {
     access_token = null;
     res.redirect('/');
 })
