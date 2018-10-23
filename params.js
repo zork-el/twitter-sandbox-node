@@ -1,12 +1,13 @@
 const crypto = require('crypto');
 
-module.exports = (method, url) => {
+module.exports = (method, url, callbackUrl) => {
     var params = {
         oauth_consumer_key: 'wCc48l3lahUSGg1e8cGS9yNXn',
         oauth_nonce: '',
         oauth_signature_method: 'HMAC-SHA1',
         oauth_timestamp: '',
-        oauth_version: '1.0'
+        oauth_version: '1.0',
+        oauth_callback: callbackUrl
     };
 
     var Params = {
@@ -14,8 +15,8 @@ module.exports = (method, url) => {
     }
 
     const consumerSecret = encodeURIComponent('xdqQvqo4f3t3jo0wzZ46mUiPZY7i3y1lSLOkjvMqt0jT9i0qTh');
-    const authSecret = encodeURIComponent('6B90TpFAFJ9hIDPvyTQ53ybpWARNIoqakwhcu993PudpK');
-    //const authSecret = encodeURI('');
+    //const authSecret = encodeURIComponent('6B90TpFAFJ9hIDPvyTQ53ybpWARNIoqakwhcu993PudpK');
+    const authSecret = encodeURI('');
 
     params.oauth_timestamp = Math.floor(Date.now()/1000);
 
@@ -43,5 +44,5 @@ module.exports = (method, url) => {
 
     params.oauth_signature = signature;
 
-    return Params;
+    return params;
 };
