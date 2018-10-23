@@ -64,7 +64,6 @@ app.get('/twitter', (req, res) => {
     options.method = 'POST';
     const callbackUrl = 'https://stormy-lowlands-87826.herokuapp.com/twitter/callback';
     const Params = params(options.method, reqUrl, callbackUrl);
-    Params.oauth_callback = callbackUrl;
     var headers = Object.keys(Params)
                     .map((key) => {
                         let encVal = encodeURIComponent(Params[key]);
