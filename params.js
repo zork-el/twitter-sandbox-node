@@ -9,6 +9,10 @@ module.exports = (method, url) => {
         oauth_version: '1.0'
     };
 
+    var Params = {
+        oauth_consumer_key: 'wCc48l3lahUSGg1e8cGS9yNXn'
+    }
+
     const consumerSecret = encodeURIComponent('xdqQvqo4f3t3jo0wzZ46mUiPZY7i3y1lSLOkjvMqt0jT9i0qTh');
     const authSecret = encodeURIComponent('6B90TpFAFJ9hIDPvyTQ53ybpWARNIoqakwhcu993PudpK');
     //const authSecret = encodeURI('');
@@ -39,5 +43,5 @@ module.exports = (method, url) => {
 
     params.oauth_signature = signature;
 
-    return params;
+    return Params;
 };
