@@ -11,7 +11,7 @@ const params = require('./params');
 const app = express();
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'main', layoutsDir: __dirname + '/views/layouts/' }));
 app.set('views', path.join(__dirname, '/views'));
@@ -56,10 +56,10 @@ var options = {
 }); */
 
 app.get('/twitter', (req, res) => {
-    const reqUrl = encodeURIComponent(`https://api.twitter.com/1.1/oauth/request_token`);
+    const reqUrl = encodeURIComponent(`https://api.twitter.com/oauth/request_token`);
     options.protocol = 'https:'
     options.host = 'api.twitter.com'
-    options.path = '/1.1/oauth/request_token';
+    options.path = '/oauth/request_token';
     options.headers.Host = 'api.twitter.com';
     options.method = 'POST';
     const callbackUrl = `https://stormy-lowlands-87826.herokuapp.com/twitter/callback`;

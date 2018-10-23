@@ -20,7 +20,7 @@ module.exports = (method, url, callbackUrl) => {
     params.oauth_timestamp = Math.floor(Date.now()/1000);
     //params.oauth_callback = `${callbackUrl}`;
 
-    const nonce = params.oauth_timestamp + '' + Math.floor(Math.random() / 1000) + '' + Math.floor(Math.random() / 10000);
+    var nonce = params.oauth_timestamp + '515151' + Math.floor(Math.random() / 1000) + '326565' + Math.floor(Math.random() / 10000);
     params.oauth_nonce = Buffer.from(nonce).toString('base64');
 
     var paramString = '';
