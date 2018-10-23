@@ -5,7 +5,7 @@ module.exports = (method, url, callbackUrl) => {
         oauth_consumer_key: 'wCc48l3lahUSGg1e8cGS9yNXn',
         oauth_nonce: '',
         oauth_signature_method: 'HMAC-SHA1',
-        oauth_timestamp: '',
+        oauth_timestamp: 0,
         oauth_version: '1.0',
         oauth_callback: callbackUrl
     };

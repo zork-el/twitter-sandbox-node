@@ -56,26 +56,25 @@ var options = {
 }); */
 
 app.get('/twitter', (req, res) => {
-    const reqUrl = encodeURI(`https://api.twitter.com/oauth/request_token`);
+    const reqUrl = encodeURIComponent(`https://api.twitter.com/oauth/request_token`);
     options.protocol = 'https:'
     options.host = 'api.twitter.com'
     options.path = '/oauth/request_token';
     options.headers.Host = 'api.twitter.com';
     options.method = 'POST';
-    let url = options.protocol + '//' + options.host + options.path;
-    url = encodeURIComponent(url);
-    const callback = 'https://stormy-lowlands-87826.herokuapp.com/twitter/callback';
-    const Params = params(options.method, url, callback);
+    const callbackUrl = 'https://stormy-lowlands-87826.herokuapp.com/twitter/callback';
+    const Params = params(options.method, reqUrl, callbackUrl);
+    Params.oauth_callback = callbackUrl;
     var headers = Object.keys(Params)
                     .map((key) => {
                         let encVal = encodeURIComponent(Params[key]);
                         return `${key}="${encVal}"`;
                     })
                     .join(', ');
-    headers = 'OAuth ' + headers;
+    headers = `OAuth ${headers}`;
     options.headers.Authorization = headers;
-    //options.headers.Accept = '*/*';
-    console.log(options);
+    options.headers.Accept = '*/*';
+    console.log(Params);
     https.request(options, (responseFromApi) => {
         let status = responseFromApi.statusCode;
         let respHeaders = responseFromApi.headers;
@@ -89,7 +88,7 @@ app.get('/twitter', (req, res) => {
             console.log(completeResponse);
             res.status(200).json({ data: listData, status: status, headers: respHeaders});
         }, (error) => {
-            res.status(404).json({error: error.msg});
+            res.status(404).json(error);
         });
     }).end();
 });
