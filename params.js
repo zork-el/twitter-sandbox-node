@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 module.exports = (method, url, callbackUrl) => {
     var params = {
-        oauth_consumer_key: 'wCc48l3lahUSGg1e8cGS9yNXn',
+        oauth_consumer_key: '0yUiaDnzWdkPGYYSTydn1o1n2',
         oauth_nonce: '',
         oauth_signature_method: 'HMAC-SHA1',
         oauth_timestamp: 0,
@@ -13,7 +13,7 @@ module.exports = (method, url, callbackUrl) => {
         oauth_consumer_key: 'wCc48l3lahUSGg1e8cGS9yNXn'
     }
 
-    const consumerSecret = encodeURIComponent('xdqQvqo4f3t3jo0wzZ46mUiPZY7i3y1lSLOkjvMqt0jT9i0qTh');
+    const consumerSecret = encodeURIComponent('ZANua1QbkqqtmGbgdJ4nKbp7kJQx4borqJecI2vDgbMGqckqij');
     //const authSecret = encodeURIComponent('6B90TpFAFJ9hIDPvyTQ53ybpWARNIoqakwhcu993PudpK');
     const authSecret = encodeURI('');
 
