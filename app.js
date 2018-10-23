@@ -59,7 +59,7 @@ app.get('/', (req, res) => {
                 res.status(err.statusCode).json(err.data);
             } else {
                 UserData = JSON.parse(data);
-                res.render('home', { msg: "See Followers List", link: "/followers" });
+                res.render('home', { msg: "See Followers List", link: "/followers", logged: true });
             }
         });
     } else res.render('home', { msg: "Log In to Twitter", link: "/twitter" });
@@ -73,10 +73,15 @@ app.get('/followers', (req, res) => {
                 res.status(err.statusCode).json(err.data);
             } else {
                 let followersData = JSON.parse(data);
-                res.render('home', { followers: true, list: followersData.users });
+                res.render('home', { followers: true, list: followersData.users, logged: true });
             }
         });
     } else res.redirect('/');
 });
+
+app.get('logout', (req, res) => {
+    access_token = null;
+    res.redirect('/');
+})
 
 module.exports = app;
