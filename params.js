@@ -6,8 +6,7 @@ module.exports = (method, url, callbackUrl) => {
         oauth_nonce: '',
         oauth_signature_method: 'HMAC-SHA1',
         oauth_timestamp: 0,
-        oauth_version: '1.0',
-        oauth_callback: callbackUrl
+        oauth_version: '1.0'
     };
 
     var Params = {
