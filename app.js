@@ -56,14 +56,15 @@ var options = {
 }); */
 
 app.get('/twitter', (req, res) => {
-    const reqUrl = encodeURIComponent(`https://api.twitter.com/oauth/request_token`);
+    const reqUrl = encodeURIComponent(`https://api.twitter.com/1.1/oauth/request_token`);
     options.protocol = 'https:'
     options.host = 'api.twitter.com'
-    options.path = '/oauth/request_token';
+    options.path = '/1.1/oauth/request_token';
     options.headers.Host = 'api.twitter.com';
     options.method = 'POST';
     const callbackUrl = `https://stormy-lowlands-87826.herokuapp.com/twitter/callback`;
     const Params = params(options.method, reqUrl, callbackUrl);
+    Params.oauth_callback = callbackUrl;
     var headers = Object.keys(Params)
                     .map((key) => {
                         let encVal = encodeURIComponent(Params[key]);
@@ -73,7 +74,7 @@ app.get('/twitter', (req, res) => {
     headers = `OAuth ${headers}`;
     options.headers.Authorization = headers;
     options.headers.Accept = '*/*';
-    console.log(Params);
+    console.log(headers);
     https.request(options, (responseFromApi) => {
         let status = responseFromApi.statusCode;
         let respHeaders = responseFromApi.headers;
