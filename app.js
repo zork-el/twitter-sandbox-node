@@ -16,14 +16,23 @@ var access_token;
 var access_token_secret;
 var UserData;
 
+var cursor = -1;
+var followersData = [];
+
 var consumer = new oauth.OAuth(reqUrl, accessUrl, consumer_key, consumer_secret, '1.0A', cbUrl, "HMAC-SHA1");
 
 const app = express();
 
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 
-app.engine('hbs', hbs({ extname: 'hbs', defaultLayout: 'main', layoutsDir: __dirname + '/views/layouts/' }));
+app.engine('hbs', hbs({
+    extname: 'hbs',
+    defaultLayout: 'main',
+    layoutsDir: __dirname + '/views/layouts/'
+}));
 app.set('views', path.join(__dirname, '/views'));
 app.use(express.static(path.join(__dirname, '/public')));
 app.set('view engine', 'hbs');
@@ -59,21 +68,45 @@ app.get('/', (req, res) => {
                 res.status(err.statusCode).json(err.data);
             } else {
                 UserData = JSON.parse(data);
-                res.render('home', { msg: "See Followers List", link: "/followers", logged: true });
+                res.render('home', {
+                    msg: "See Followers List",
+                    link: "/followers",
+                    logged: true
+                });
             }
         });
-    } else res.render('home', { msg: "Log In to Twitter", link: "/twitter" });
+    } else res.render('home', {
+        msg: "Log In to Twitter",
+        link: "/twitter"
+    });
 });
 
 app.get('/followers', (req, res) => {
     if (access_token) {
-        let followersUrl = `https://api.twitter.com/1.1/followers/list.json?cursor=-1&screen_name=${UserData.screen_name}&skip_status=true&include_user_entities=false`;
+        let followersUrl = `https://api.twitter.com/1.1/followers/list.json?cursor=${cursor}&screen_name=${UserData.screen_name}&skip_status=true&include_user_entities=false`;
         consumer.get(followersUrl, access_token, access_token_secret, (err, data, response) => {
             if (err) {
                 res.status(err.statusCode).json(err.data);
             } else {
-                let followersData = JSON.parse(data);
-                res.render('home', { followers: true, list: followersData.users, logged: true });
+                cursor = JSON.parse(data).next_cursor;
+                followersData = followersData.concat(
+                    JSON.parse(data).users
+                        .map((user) => {
+                            return {
+                                screen_name: user.screen_name,
+                                profile_image_url: user.profile_image_url,
+                                followers_count: user.followers_count,
+                                name: user.name
+                            };
+                        })
+                );
+                console.log(followersData.length);
+                res.render('home', {
+                    followers: true,
+                    list: followersData,
+                    logged: true
+                });
+                //res.status(200).json(followersData);
             }
         });
     } else res.redirect('/');
@@ -81,6 +114,8 @@ app.get('/followers', (req, res) => {
 
 app.get('/logout', (req, res) => {
     access_token = null;
+    cursor = -1;
+    followersData = [];
     res.redirect('/');
 })
 

@@ -3,17 +3,24 @@
     <a href={{link}}>{{msg}}</a>
 </h1>
 {{else}}
+<h5>
+    <a href="/followers">Next</a>
+</h5>
 {{#each list}}
-<li>
+<div>
     <img src={{this.profile_image_url}} alt="">
     <h3>{{this.screen_name}}</h3>
-</li>
+    <p>Name: {{this.name}} Followers: {{this.followers_count}}</p>
+</div>
 <hr>
 {{/each}}
 {{/if}}
 
 {{#if logged}}
 <footer>
+    <h5>
+        <a href="/followers">Next</a>
+    </h5>
     <h5>
         <a href="/logout">Logout</a>
     </h5>
