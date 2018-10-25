@@ -1,0 +1,14 @@
+<h1>List of {{type}}</h1>
+
+{{#each users}}
+<div>
+  <img src={{this.profile_image_url}} alt={{this.screen_name}}>
+  <p>Screen Name: @{{this.screen_name}} | Followers: {{this.followers_count}} | Name: {{this.name}}</p>
+</div>
+{{/each}}
+
+<footer>
+  <h5>
+    <a href="/logout">Logout</a>
+  </h5>
+</footer>

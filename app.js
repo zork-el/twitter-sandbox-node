@@ -17,7 +17,11 @@ var access_token_secret;
 var UserData;
 
 var cursor = -1;
-var followersData = [];
+var newCursor = -1;
+var followerIds = [];
+var newFollowerIds = [];
+var unfollowersData = [];
+var newfollowersData = [];
 
 var consumer = new oauth.OAuth(reqUrl, accessUrl, consumer_key, consumer_secret, '1.0A', cbUrl, "HMAC-SHA1");
 
@@ -36,6 +40,22 @@ app.engine('hbs', hbs({
 app.set('views', path.join(__dirname, '/views'));
 app.use(express.static(path.join(__dirname, '/public')));
 app.set('view engine', 'hbs');
+
+const unfollowers = (arr, set) => {
+    arr.forEach(val => {
+        if (!set.has(val)) unfollowersData.push(val);
+    });
+    console.log("Unfollowers No.: " + unfollowersData.length);
+    return unfollowersData;
+};
+
+const newfollowers = (arr, set) => {
+    arr.forEach(val => {
+        if (!set.has(val)) newfollowersData.push(val);
+    });
+    console.log("New Followers No.: " + newfollowersData.length);
+    return newfollowersData;
+};
 
 app.get('/twitter', (req, res) => {
     consumer.getOAuthRequestToken((err, oauthToken, oauthTokenSecret, results) => {
@@ -69,7 +89,7 @@ app.get('/', (req, res) => {
             } else {
                 UserData = JSON.parse(data);
                 res.render('home', {
-                    msg: "See Followers List",
+                    msg: "See List",
                     link: "/followers",
                     logged: true
                 });
@@ -81,7 +101,7 @@ app.get('/', (req, res) => {
     });
 });
 
-app.get('/followers', (req, res) => {
+/* app.get('/followers', (req, res) => {
     if (access_token) {
         let followersUrl = `https://api.twitter.com/1.1/followers/list.json?cursor=${cursor}&screen_name=${UserData.screen_name}&skip_status=true&include_user_entities=false`;
         consumer.get(followersUrl, access_token, access_token_secret, (err, data, response) => {
@@ -89,7 +109,7 @@ app.get('/followers', (req, res) => {
                 res.status(err.statusCode).json(err.data);
             } else {
                 cursor = JSON.parse(data).next_cursor;
-                followersData = followersData.concat(
+                followerIds = followerIds.concat(
                     JSON.parse(data).users
                         .map((user) => {
                             return {
@@ -100,22 +120,89 @@ app.get('/followers', (req, res) => {
                             };
                         })
                 );
-                console.log(followersData.length);
+                console.log(followerIds.length);
                 res.render('home', {
                     followers: true,
-                    list: followersData,
+                    list: followerIds,
                     logged: true
                 });
-                //res.status(200).json(followersData);
+                //res.status(200).json(followerIds);
             }
         });
     } else res.redirect('/');
+}); */
+
+app.get('/followers', (req, res) => {
+    if (access_token) {
+        if (cursor !== "0") {
+            let followersUrl = `https://api.twitter.com/1.1/followers/ids.json?cursor=${cursor}&screen_name=${UserData.screen_name}&stringify_ids=true`;
+            consumer.get(followersUrl, access_token, access_token_secret, (err, data, response) => {
+                if (err) {
+                    res.status(err.statusCode).json(err.data);
+                } else {
+                    cursor = JSON.parse(data).next_cursor_str;
+                    newFollowerIds = newFollowerIds.concat(JSON.parse(data).ids);
+                    res.redirect('/followers');
+                    /* console.log(data);
+                    res.status(200).json(JSON.parse(data)); */
+                }
+            });
+        } else {
+            cursor = -1;
+            if (followerIds.length === 0) {
+                followerIds = newFollowerIds;
+                newFollowerIds = [];
+                res.render('home', {message: "First Time Signing In", unfollowers: "0", newfollowers: "0", followersNumber: followerIds.length, logged: true});
+            } else {
+                const followersSet = new Set(followerIds);
+                const newFollowersSet = new Set(newFollowerIds);
+                unfollowersData = [];
+                newfollowersData = [];
+                console.log(followerIds.length);
+                console.log(newFollowerIds.length);
+                unfollowersData = unfollowers(followerIds, newFollowersSet);
+                newfollowersData = newfollowers(newFollowerIds, followersSet);
+                res.render('home', {unfollowers: unfollowersData.join(','), newfollowers: newfollowersData.join(','), newfollowersNumber: newFollowerIds.length, logged: true});
+                followerIds = newFollowerIds;
+                newFollowerIds = [];
+                
+            }
+        }
+    } else res.redirect('/');
+});
+
+app.get('/twitterUser/:twitterId', (req, res) => {
+    console.log(req.params.twitterId);
+    let params = req.params.twitterId;
+    console.log(params);
+    let idUrl = "https://api.twitter.com/1.1/users/lookup.json?user_id="+params+"&include_entities=false";
+    consumer.get(idUrl, access_token, access_token_secret, (err, data, results) => {
+        if (err) {
+            res.status(err.statusCode).json(err.data);
+        } else {
+            var parsedData = JSON.parse(data)
+                .map((user) => {
+                    return {
+                        screen_name: user.screen_name,
+                        profile_image_url: user.profile_image_url,
+                        followers_count: user.followers_count,
+                        name: user.name
+                    }
+                });
+            res.render('list', { type: req.query.type, users: parsedData});
+        }
+    });
+});
+
+app.get('/twitterUser//', (req, res) => {
+    msg = "No Users Here!!";
+    res.status(404).json(msg);
 });
 
 app.get('/logout', (req, res) => {
     access_token = null;
     cursor = -1;
-    followersData = [];
+    followerIds = [];
     res.redirect('/');
 })
 
