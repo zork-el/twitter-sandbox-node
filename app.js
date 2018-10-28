@@ -11,9 +11,9 @@ const mongoUrl = "mongodb://poseidon:prithul1996@ds145329.mlab.com:45329/twitter
 consumer_key = '0yUiaDnzWdkPGYYSTydn1o1n2';
 consumer_secret = 'ZANua1QbkqqtmGbgdJ4nKbp7kJQx4borqJecI2vDgbMGqckqij';
 reqUrl = "https://api.twitter.com/oauth/request_token";
-//accessUrl = "https://api.twitter.com/oauth/access_token";
+accessUrl = "https://api.twitter.com/oauth/access_token";
 cbUrl = "https://stormy-lowlands-87826.herokuapp.com/twitter/cb";
-cbUrl = "http://127.0.0.1:3000/twitter/cb";
+//cbUrl = "http://127.0.0.1:3000/twitter/cb";
 credentialUrl = "https://api.twitter.com/1.1/account/verify_credentials.json";
 var oauth_token;
 var oauth_token_secret;
@@ -22,7 +22,6 @@ var access_token_secret;
 var UserData;
 
 var cursor = -1;
-var newCursor = -1;
 var followerIds = [];
 var newFollowerIds = [];
 var unfollowersData = [];
