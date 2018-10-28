@@ -3,13 +3,18 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const hbs = require('express-handlebars');
 const oauth = require('oauth');
+const mongoose = require('mongoose');
+const Users = require('./schema');
+
+const mongoUrl = "mongodb://poseidon:prithul1996@ds145329.mlab.com:45329/twitter-sandbox";
 
 consumer_key = '0yUiaDnzWdkPGYYSTydn1o1n2';
 consumer_secret = 'ZANua1QbkqqtmGbgdJ4nKbp7kJQx4borqJecI2vDgbMGqckqij';
 reqUrl = "https://api.twitter.com/oauth/request_token";
-accessUrl = "https://api.twitter.com/oauth/access_token";
+//accessUrl = "https://api.twitter.com/oauth/access_token";
 cbUrl = "https://stormy-lowlands-87826.herokuapp.com/twitter/cb";
-credentialUrl = "https://api.twitter.com/1.1/account/verify_credentials.json"
+cbUrl = "http://127.0.0.1:3000/twitter/cb";
+credentialUrl = "https://api.twitter.com/1.1/account/verify_credentials.json";
 var oauth_token;
 var oauth_token_secret;
 var access_token;
@@ -24,6 +29,13 @@ var unfollowersData = [];
 var newfollowersData = [];
 
 var consumer = new oauth.OAuth(reqUrl, accessUrl, consumer_key, consumer_secret, '1.0A', cbUrl, "HMAC-SHA1");
+
+mongoose.connect(mongoUrl, { useNewUrlParser: true});
+const connection = mongoose.connection;
+
+connection.on('connected', () => {
+    console.log("Connected to Twitter Database!");
+});
 
 const app = express();
 
@@ -87,12 +99,41 @@ app.get('/', (req, res) => {
             if (err) {
                 res.status(err.statusCode).json(err.data);
             } else {
-                UserData = JSON.parse(data);
-                res.render('home', {
-                    msg: "See List",
-                    link: "/followers",
-                    logged: true
-                });
+                screenName = JSON.parse(data).screen_name;
+                Users.findOne({screen_name: screenName}).exec()
+                    .then((User) => {
+                        if (!User) {
+                            Users.create({screen_name: screenName})
+                                .then((createdUser) => {
+                                    UserData = createdUser;
+                                    console.log(UserData);
+                                    res.render('home', {
+                                        msg: "First Login! Click Here to Sync Followers!",
+                                        link: "/followers",
+                                        logged: true
+                                    });
+                                })
+                                .catch(err => res.status(400).json(err));
+                        } else {
+                            console.log(UserData);
+                            if (User.followers.length === 0) {
+                                UserData = User;
+                                res.render('home', {
+                                    msg: "Not Synced! Click Here to Sync Followers!",
+                                    link: "/followers",
+                                    logged: true
+                                });
+                            } else {
+                                UserData = User;
+                                res.render('home', {
+                                    msg: "Get Link for New Followers and Unfollowers",
+                                    link: "/followers",
+                                    logged: true
+                                });
+                            }
+                        }
+                    })
+                    .catch(err => res.status(400).json(err));
             }
         });
     } else res.render('home', {
@@ -134,6 +175,7 @@ app.get('/', (req, res) => {
 
 app.get('/followers', (req, res) => {
     if (access_token) {
+        followerIds = UserData.followers;
         if (cursor !== "0") {
             let followersUrl = `https://api.twitter.com/1.1/followers/ids.json?cursor=${cursor}&screen_name=${UserData.screen_name}&stringify_ids=true`;
             consumer.get(followersUrl, access_token, access_token_secret, (err, data, response) => {
@@ -151,8 +193,13 @@ app.get('/followers', (req, res) => {
             cursor = -1;
             if (followerIds.length === 0) {
                 followerIds = newFollowerIds;
+                UserData.followers = newFollowerIds;
                 newFollowerIds = [];
-                res.render('home', {message: "First Time Signing In", unfollowers: "0", newfollowers: "0", followersNumber: followerIds.length, logged: true});
+                UserData.save()
+                    .then((updatedUser) => {
+                        res.render('home', {message: "First Time Syncing", unfollowers: "0", newfollowers: "0", followersNumber: updatedUser.followers.length, logged: true});
+                    })
+                    .catch(err => res.status(400).json(err));
             } else {
                 const followersSet = new Set(followerIds);
                 const newFollowersSet = new Set(newFollowerIds);
@@ -162,10 +209,20 @@ app.get('/followers', (req, res) => {
                 console.log(newFollowerIds.length);
                 unfollowersData = unfollowers(followerIds, newFollowersSet);
                 newfollowersData = newfollowers(newFollowerIds, followersSet);
-                res.render('home', {unfollowers: unfollowersData.join(','), newfollowers: newfollowersData.join(','), newfollowersNumber: newFollowerIds.length, logged: true});
                 followerIds = newFollowerIds;
+                UserData.followers = newFollowerIds;
                 newFollowerIds = [];
-                
+                UserData.save()
+                    .then((updatedUser) => {
+                        res.render('home', {
+                            unfollowers: unfollowersData.join(','), 
+                            unfollowLength: unfollowersData.length,
+                            newfollowers: newfollowersData.join(','), 
+                            newfollowsLength: newfollowersData.length,
+                            followersNumber: updatedUser.followers.length, 
+                            logged: true});
+                    })
+                    .catch(err => res.status(400).json());
             }
         }
     } else res.redirect('/');
@@ -197,6 +254,18 @@ app.get('/twitterUser/:twitterId', (req, res) => {
 app.get('/twitterUser//', (req, res) => {
     msg = "No Users Here!!";
     res.status(404).json(msg);
+});
+
+app.get('/unfollow/:screenName', (req, res) => {
+    let params = req.params.screenName;
+    let unfollowUrl = "https://api.twitter.com/1.1/friendships/destroy.json?screen_name="+params; 
+    consumer.post(unfollowUrl, access_token, access_token_secret, null, null, (err, data, results) => {
+        if (err) {
+            res.status(err.statusCode).json(err.data);
+        } else {
+            res.status(200).json("Unfollowed: @" + params);
+        }
+    });
 });
 
 app.get('/logout', (req, res) => {

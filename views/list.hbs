@@ -4,7 +4,9 @@
 <div>
   <img src={{this.profile_image_url}} alt={{this.screen_name}}>
   <p>Screen Name: @{{this.screen_name}} | Followers: {{this.followers_count}} | Name: {{this.name}}</p>
+  <p><a href="/unfollow/{{this.screen_name}}" target="_blank">Unfollow</a></p>
 </div>
+<hr>
 {{/each}}
 
 <footer>

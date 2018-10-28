@@ -7,14 +7,15 @@
 <h5>
     <a href="/followers">Refresh</a>
 </h5>
-<h3>Number of Current Followers: {{newfollowersNumber}}</h3>
+<h3>Number of Current Followers: {{followersNumber}}</h3>
+Un-Followers: <b>{{unfollowLength}}</b>
 <h2>
-    <a href="/twitterUser/{{unfollowers}}/?type=Unfollowers">List of Unfollowers</a>
+    <a href="/twitterUser/{{unfollowers}}/?type=Unfollowers" target="_blank">List of Unfollowers</a>
 </h2>
 <hr>
-New Followers
+New Followers: <b>{{newfollowsLength}}</b>
 <h2>
-    <a href="/twitterUser/{{newfollowers}}/?type=Followers">List of Followers</a>
+    <a href="/twitterUser/{{newfollowers}}/?type=Followers" target="_blank">List of Followers</a>
 </h2>
 {{/if}}
 
