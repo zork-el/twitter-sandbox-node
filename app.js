@@ -5,14 +5,15 @@ const hbs = require('express-handlebars');
 const oauth = require('oauth');
 const mongoose = require('mongoose');
 const Users = require('./schema');
+const config = require('./config');
 
-const mongoUrl = "mongodb://poseidon:prithul1996@ds145329.mlab.com:45329/twitter-sandbox";
+const mongoUrl = config.mongoUrl;
 
-consumer_key = '0yUiaDnzWdkPGYYSTydn1o1n2';
-consumer_secret = 'ZANua1QbkqqtmGbgdJ4nKbp7kJQx4borqJecI2vDgbMGqckqij';
+consumer_key = config.consumer_key;
+consumer_secret = config.consumer_secret;
 reqUrl = "https://api.twitter.com/oauth/request_token";
 accessUrl = "https://api.twitter.com/oauth/access_token";
-cbUrl = "https://stormy-lowlands-87826.herokuapp.com/twitter/cb";
+cbUrl = config.cb_Url;
 //cbUrl = "http://127.0.0.1:3000/twitter/cb";
 credentialUrl = "https://api.twitter.com/1.1/account/verify_credentials.json";
 var oauth_token;
